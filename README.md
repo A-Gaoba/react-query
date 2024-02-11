@@ -28,3 +28,11 @@ To get started with this app, clone the repository and install the dependencies:
 git clone https://github.com/A-Gaoba/react-query.git)https://github.com/A-Gaoba/react-query.git
 cd todo-app
 npm install
+```
+Run the application in development mode:
+
+```
+npm run dev
+```
+Open http://localhost:5173 to view it in your browser.
+
