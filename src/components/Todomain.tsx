@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TodoFilter from './TodoFilter';
+import AddTodoForm from './AddTodoForm';
 
 interface Todo {
   id: string;
@@ -13,7 +14,6 @@ const api = "https://65c8837ea4fbc162e111d092.mockapi.io/";
 
 const TodoComponent: React.FC = () => {
   const queryClient = useQueryClient();
-  const [newTodoContent, setNewTodoContent] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [filter, setFilter] = useState('all');
@@ -23,7 +23,6 @@ const TodoComponent: React.FC = () => {
     queryFn: () => axios.get(`${api}todos`).then(res => res.data),
   });
 
-  // Added to sort todos based on the done status
   const [todos, setTodos] = useState<Todo[]>([]);
   useEffect(() => {
     if (TodoQuery.data) {
@@ -43,13 +42,6 @@ const TodoComponent: React.FC = () => {
     }
   });
 
-  const addTodoMutation = useMutation({
-    mutationFn: (newTodo: { content: string }) => axios.post(`${api}todos`, { ...newTodo, done: false }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
-
   const deleteTodoMutation = useMutation({
     mutationFn: (todoId: string) => axios.delete(`${api}todos/${todoId}`),
     onSuccess: () => {
@@ -66,12 +58,6 @@ const TodoComponent: React.FC = () => {
     },
   });
 
-  const handleAddTodo = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTodoContent.trim()) return;
-    addTodoMutation.mutate({ content: newTodoContent });
-    setNewTodoContent('');
-  };
 
   const handleDeleteTodo = (todoId: string) => {
     deleteTodoMutation.mutate(todoId);
@@ -98,7 +84,7 @@ const TodoComponent: React.FC = () => {
     <main className='bg-gray-800 rounded-2xl p-6 min-h-screen w-[60%] m-auto'>
       <h1 className="text-3xl font-bold mb-8 text-white">Todo App</h1>
       <TodoFilter filter={filter} setFilter={setFilter} />
-      <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
+      {/* <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
         <label id="addTodoLabel" className="sr-only">Add new todo</label>
         <input
           className='border-2 border-gray-300 m-2 p-2 rounded-lg w-full max-w-md'
@@ -109,7 +95,8 @@ const TodoComponent: React.FC = () => {
           aria-label="Add new todo"
         />
         <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2'>Add Todo</button>
-      </form>
+      </form> */}
+      <AddTodoForm />
       <div className="flex justify-center">
         <div className=" md:w-2/3 xl:w-1/2 2xl:w-1/2 mt-6">
           {filteredTodos.map(todo => (
