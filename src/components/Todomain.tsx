@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import TodoFilter from './TodoFilter';
 
 interface Todo {
   id: string;
   content: string;
-  done: boolean; // Added done property
+  done: boolean;
 }
 
 const api = "https://65c8837ea4fbc162e111d092.mockapi.io/";
@@ -15,6 +16,7 @@ const TodoComponent: React.FC = () => {
   const [newTodoContent, setNewTodoContent] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [filter, setFilter] = useState('all');
 
   const TodoQuery = useQuery<Todo[], Error>({
     queryKey: ["todos"],
@@ -29,6 +31,17 @@ const TodoComponent: React.FC = () => {
       setTodos(sortedTodos);
     }
   }, [TodoQuery.data]);
+
+  const filteredTodos = todos.filter(todo => {
+    switch (filter) {
+      case 'active':
+        return !todo.done;
+      case 'completed':
+        return todo.done;
+      default:
+        return true;
+    }
+  });
 
   const addTodoMutation = useMutation({
     mutationFn: (newTodo: { content: string }) => axios.post(`${api}todos`, { ...newTodo, done: false }),
@@ -84,6 +97,7 @@ const TodoComponent: React.FC = () => {
   return (
     <main className='bg-gray-800 rounded-2xl p-6 min-h-screen w-[60%] m-auto'>
       <h1 className="text-3xl font-bold mb-8 text-white">Todo App</h1>
+      <TodoFilter filter={filter} setFilter={setFilter} />
       <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
         <label id="addTodoLabel" className="sr-only">Add new todo</label>
         <input
@@ -98,13 +112,16 @@ const TodoComponent: React.FC = () => {
       </form>
       <div className="flex justify-center">
         <div className=" md:w-2/3 xl:w-1/2 2xl:w-1/2 mt-6">
-          {todos.map(todo => (
+          {filteredTodos.map(todo => (
             <div key={todo.id} className={`flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2 ${todo.done ? 'line-through' : ''}`}>
+              <label className="sr-only">checkbox</label>
               <input
+                name='checkbox'
                 type="checkbox"
                 checked={todo.done}
                 onChange={() => toggleDone(todo)}
                 className="m-2"
+                aria-label='check todo'
               />
               {editingId === todo.id ? (
                 <form onSubmit={(e) => handleUpdate(e, todo.id)} aria-labelledby={`editTodoLabel${todo.id}`} className="w-full flex-grow">
