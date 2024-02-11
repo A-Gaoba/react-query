@@ -39,7 +39,7 @@ const TodoComponent: React.FC = () => {
       axios.put(`${api}todos/${todo.id}`, { content: todo.content }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setEditingId(null); // Reset editing state
+      setEditingId(null);
     },
   });
 
