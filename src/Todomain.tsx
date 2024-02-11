@@ -68,8 +68,8 @@ const TodoComponent: React.FC = () => {
   if (TodoQuery.isError) return <p>Error: {TodoQuery.error.message}</p>;
 
   return (
-    <main className=' bg-slate-400 rounded-2xl p-6 min-h-screen'>
-      <h1 className="text-3xl font-bold mb-8">Todo App</h1>
+    <main className=' bg-gray-800 rounded-2xl p-6 min-h-screen w-[80%] m-auto'>
+      <h1 className="text-3xl font-bold mb-8 text-white">Todo App</h1>
       <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
         <label id="addTodoLabel" className="sr-only">Add new todo</label>
         <input
@@ -83,7 +83,7 @@ const TodoComponent: React.FC = () => {
         <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2'>Add Todo</button>
       </form>
       <div className="flex justify-center">
-        <div className="w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
+        <div className=" xl:w-1/2 2xl:w-1/2 mt-6">
           {TodoQuery.data?.map(todo => (
             <div key={todo.id} className="flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2">
               {editingId === todo.id ? (
