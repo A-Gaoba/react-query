@@ -25,6 +25,6 @@ This Todo App is a modern, interactive web application built using React. It all
 To get started with this app, clone the repository and install the dependencies:
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/A-Gaoba/react-query.git)https://github.com/A-Gaoba/react-query.git]
 cd todo-app
 npm install
