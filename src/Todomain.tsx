@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface Todo {
   id: string;
   content: string;
+  done: boolean; // Added done property
 }
 
 const api = "https://65c8837ea4fbc162e111d092.mockapi.io/";
@@ -20,8 +21,17 @@ const TodoComponent: React.FC = () => {
     queryFn: () => axios.get(`${api}todos`).then(res => res.data),
   });
 
+  // Added to sort todos based on the done status
+  const [todos, setTodos] = useState<Todo[]>([]);
+  useEffect(() => {
+    if (TodoQuery.data) {
+      const sortedTodos = [...TodoQuery.data].sort((a, b) => Number(a.done) - Number(b.done));
+      setTodos(sortedTodos);
+    }
+  }, [TodoQuery.data]);
+
   const addTodoMutation = useMutation({
-    mutationFn: (newTodo: { content: string }) => axios.post(`${api}todos`, newTodo),
+    mutationFn: (newTodo: { content: string }) => axios.post(`${api}todos`, { ...newTodo, done: false }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
@@ -35,8 +45,8 @@ const TodoComponent: React.FC = () => {
   });
 
   const updateTodoMutation = useMutation({
-    mutationFn: (todo: { id: string; content: string }) =>
-      axios.put(`${api}todos/${todo.id}`, { content: todo.content }),
+    mutationFn: (todo: { id: string; content: string; done?: boolean }) =>
+      axios.put(`${api}todos/${todo.id}`, todo),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       setEditingId(null);
@@ -64,11 +74,15 @@ const TodoComponent: React.FC = () => {
     updateTodoMutation.mutate({ id, content: editContent });
   };
 
+  const toggleDone = (todo: Todo) => {
+    updateTodoMutation.mutate({ ...todo, done: !todo.done });
+  };
+
   if (TodoQuery.isLoading) return <p>Loading...</p>;
   if (TodoQuery.isError) return <p>Error: {TodoQuery.error.message}</p>;
 
   return (
-    <main className=' bg-gray-800 rounded-2xl p-6 min-h-screen w-[80%] m-auto'>
+    <main className='bg-gray-800 rounded-2xl p-6 min-h-screen w-[60%] m-auto'>
       <h1 className="text-3xl font-bold mb-8 text-white">Todo App</h1>
       <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
         <label id="addTodoLabel" className="sr-only">Add new todo</label>
@@ -83,11 +97,17 @@ const TodoComponent: React.FC = () => {
         <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2'>Add Todo</button>
       </form>
       <div className="flex justify-center">
-        <div className=" xl:w-1/2 2xl:w-1/2 mt-6">
-          {TodoQuery.data?.map(todo => (
-            <div key={todo.id} className="flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2">
+        <div className=" md:w-2/3 xl:w-1/2 2xl:w-1/2 mt-6">
+          {todos.map(todo => (
+            <div key={todo.id} className={`flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2 ${todo.done ? 'line-through' : ''}`}>
+              <input
+                type="checkbox"
+                checked={todo.done}
+                onChange={() => toggleDone(todo)}
+                className="m-2"
+              />
               {editingId === todo.id ? (
-                <form onSubmit={(e) => handleUpdate(e, todo.id)} aria-labelledby={`editTodoLabel${todo.id}`} className="w-full">
+                <form onSubmit={(e) => handleUpdate(e, todo.id)} aria-labelledby={`editTodoLabel${todo.id}`} className="w-full flex-grow">
                   <label htmlFor={`editInput${todo.id}`} className="sr-only">Edit Todo</label>
                   <input
                     id={`editInput${todo.id}`}
