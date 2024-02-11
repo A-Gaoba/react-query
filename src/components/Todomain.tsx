@@ -3,12 +3,7 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TodoFilter from './TodoFilter';
 import AddTodoForm from './AddTodoForm';
-
-interface Todo {
-  id: string;
-  content: string;
-  done: boolean;
-}
+import { Todo } from './types';
 
 const api = "https://65c8837ea4fbc162e111d092.mockapi.io/";
 
@@ -84,18 +79,6 @@ const TodoComponent: React.FC = () => {
     <main className='bg-gray-800 rounded-2xl p-6 min-h-screen w-[60%] m-auto'>
       <h1 className="text-3xl font-bold mb-8 text-white">Todo App</h1>
       <TodoFilter filter={filter} setFilter={setFilter} />
-      {/* <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
-        <label id="addTodoLabel" className="sr-only">Add new todo</label>
-        <input
-          className='border-2 border-gray-300 m-2 p-2 rounded-lg w-full max-w-md'
-          type="text"
-          placeholder="Add new todo"
-          value={newTodoContent}
-          onChange={(e) => setNewTodoContent(e.target.value)}
-          aria-label="Add new todo"
-        />
-        <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2'>Add Todo</button>
-      </form> */}
       <AddTodoForm />
       <div className="flex justify-center">
         <div className=" md:w-2/3 xl:w-1/2 2xl:w-1/2 mt-6">
