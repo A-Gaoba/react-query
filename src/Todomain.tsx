@@ -68,46 +68,52 @@ const TodoComponent: React.FC = () => {
   if (TodoQuery.isError) return <p>Error: {TodoQuery.error.message}</p>;
 
   return (
-    <>
+    <main className=' bg-slate-400 rounded-2xl p-6 min-h-screen'>
       <h1 className="text-3xl font-bold mb-8">Todo App</h1>
-      <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel">
+      <form onSubmit={handleAddTodo} aria-labelledby="addTodoLabel" className="flex justify-center">
         <label id="addTodoLabel" className="sr-only">Add new todo</label>
         <input
-          className='border-2 m-2 p-2'
+          className='border-2 border-gray-300 m-2 p-2 rounded-lg w-full max-w-md'
           type="text"
           placeholder="Add new todo"
           value={newTodoContent}
           onChange={(e) => setNewTodoContent(e.target.value)}
           aria-label="Add new todo"
         />
-        <button type="submit" className='border-2 m-2 p-2'>Add Todo</button>
+        <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2'>Add Todo</button>
       </form>
-      <div>
-        {TodoQuery.data?.map(todo => (
-          <div key={todo.id} className="flex justify-between items-center">
-            {editingId === todo.id ? (
-              <form onSubmit={(e) => handleUpdate(e, todo.id)} aria-labelledby={`editTodoLabel${todo.id}`}>
-                <label htmlFor={`editInput${todo.id}`} className="sr-only">Edit Todo</label>
-                <input
-                  id={`editInput${todo.id}`}
-                  className='border-2 m-2 p-2'
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  aria-label={`Edit todo ${todo.content}`}
-                />
-                <button type="submit" className='border-2 m-2 p-2'>Update</button>
-              </form>
-            ) : (
-              <>
-                <span>{todo.content}</span>
-                <button onClick={() => handleEdit(todo)} className='border-2 m-2 p-2'>Edit</button>
-              </>
-            )}
-            <button onClick={() => handleDeleteTodo(todo.id)} className='border-2 m-2 p-2'>Delete</button>
-          </div>
-        ))}
+      <div className="flex justify-center">
+        <div className="w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
+          {TodoQuery.data?.map(todo => (
+            <div key={todo.id} className="flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2">
+              {editingId === todo.id ? (
+                <form onSubmit={(e) => handleUpdate(e, todo.id)} aria-labelledby={`editTodoLabel${todo.id}`} className="w-full">
+                  <label htmlFor={`editInput${todo.id}`} className="sr-only">Edit Todo</label>
+                  <input
+                    id={`editInput${todo.id}`}
+                    className='border-2 border-gray-300 rounded-lg w-full p-2'
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    aria-label={`Edit todo ${todo.content}`}
+                  />
+                  <button type="submit" className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-2 float-right'>Update</button>
+                </form>
+              ) : (
+                <div className="flex-grow">
+                  <span>{todo.content}</span>
+                </div>
+              )}
+              {editingId !== todo.id && (
+                <div>
+                  <button type='button' onClick={() => handleEdit(todo)} className='bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded m-1'>Edit</button>
+                  <button type='button' onClick={() => handleDeleteTodo(todo.id)} className='bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded m-1'>Delete</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </>
+    </main>
   );
 };
 
