@@ -76,27 +76,32 @@ const TodoComponent: React.FC = () => {
   if (TodoQuery.isLoading) return <p>Loading...</p>;
   if (TodoQuery.isError) return <p>Error: {TodoQuery.error.message}</p>;
 
-
-  const containerVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: { opacity: 1, scale: 1, transition: { delay: 0.3, duration: 0.5 } },
-  };
-
-  // Animation variants for todo items
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3 } },
-  };
-
   return (
-    <main className='bg-gray-800 rounded-2xl p-6 min-h-screen w-full md:w-3/4 lg:w-[60%] xl:mx-auto'>
+    <motion.main
+      className='bg-gray-800 rounded-2xl p-6 min-h-screen w-full md:w-3/4 lg:w-[60%] xl:mx-auto'
+      variants={{
+        hidden: { opacity: 0, scale: 0.95 },
+        visible: { opacity: 1, scale: 1, transition: { delay: 0.3, duration: 0.5 } }
+      }}
+      initial="hidden"
+      animate="visible"
+    >
       <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6 lg:mb-8 text-white">Todo App</h1>
       <TodoFilter filter={filter} setFilter={setFilter} />
       <AddTodoForm />
       <div className="flex justify-center">
         <div className="w-full sm:w-2/3 md:w-2/3 lg:w-1/2 xl:w-1/2 mt-6">
-          {filteredTodos.map(todo => (
-            <div key={todo.id} className={`flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2 ${todo.done ? 'line-through' : ''}`}>
+          {filteredTodos.map((todo, index) => (
+            <motion.div
+              key={todo.id}
+              className={`flex justify-between items-center bg-white shadow-md rounded-lg p-4 my-2 ${todo.done ? 'line-through' : ''}`}
+              variants={{
+                hidden: { y: 20, opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { delay: index * 0.1, duration: 0.4 } }
+              }}
+              initial="hidden"
+              animate="visible"
+            >
               <input
                 name='checkbox'
                 type="checkbox"
@@ -126,12 +131,12 @@ const TodoComponent: React.FC = () => {
                   <button onClick={() => handleDeleteTodo(todo.id)} className='bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded m-1'>Delete</button>
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </main>
-  );
+    </motion.main>
+  );  
 };
 
 export default TodoComponent;
